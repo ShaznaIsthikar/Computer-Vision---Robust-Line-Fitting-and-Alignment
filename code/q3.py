@@ -119,3 +119,29 @@ print(f"Number of ORB keypoints in c1: {len(kp1)}")
 print(f"Number of ORB keypoints in c2: {len(kp2)}")
 print(f"Number of matches used: {len(good_matches)}")
 
+
+# --------------------------------------------------
+# Part (d): homography using ORB matches
+# --------------------------------------------------
+src_pts = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+dst_pts = np.float32([kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+
+H_orb, mask_orb = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0)
+
+orb_warped = cv.warpPerspective(img1, H_orb, (img2.shape[1], img2.shape[0]))
+
+orb_diff = cv.absdiff(orb_warped, img2)
+orb_diff_gray = cv.cvtColor(orb_diff, cv.COLOR_BGR2GRAY)
+_, orb_diff_thresh = cv.threshold(orb_diff_gray, 30, 255, cv.THRESH_BINARY)
+
+cv.imwrite(os.path.join(OUT_DIR, "q3d_orb_warped.png"), orb_warped)
+cv.imwrite(os.path.join(OUT_DIR, "q3d_orb_difference_gray.png"), orb_diff_gray)
+cv.imwrite(os.path.join(OUT_DIR, "q3d_orb_difference_threshold.png"), orb_diff_thresh)
+
+print("Manual Homography:")
+print(H_manual)
+
+print("ORB Homography:")
+print(H_orb)
+
+print("Outputs saved in outputs/q3/")
