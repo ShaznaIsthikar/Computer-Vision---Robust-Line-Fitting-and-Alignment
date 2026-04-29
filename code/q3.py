@@ -87,3 +87,35 @@ cv.imwrite(os.path.join(OUT_DIR, "q3b_manual_difference_gray.png"), manual_diff_
 cv.imwrite(os.path.join(OUT_DIR, "q3b_manual_difference_threshold.png"), manual_diff_thresh)
 
 
+# --------------------------------------------------
+# Part (c): ORB keypoints and matches
+# --------------------------------------------------
+gray1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
+gray2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+
+orb = cv.ORB_create(nfeatures=3000)
+
+kp1, des1 = orb.detectAndCompute(gray1, None)
+kp2, des2 = orb.detectAndCompute(gray2, None)
+
+bf = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True)
+matches = bf.match(des1, des2)
+
+matches = sorted(matches, key=lambda x: x.distance)
+
+good_matches = matches[:80]
+
+match_img = cv.drawMatches(
+    img1, kp1,
+    img2, kp2,
+    good_matches,
+    None,
+    flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS
+)
+
+cv.imwrite(os.path.join(OUT_DIR, "q3c_orb_matches.png"), match_img)
+
+print(f"Number of ORB keypoints in c1: {len(kp1)}")
+print(f"Number of ORB keypoints in c2: {len(kp2)}")
+print(f"Number of matches used: {len(good_matches)}")
+
