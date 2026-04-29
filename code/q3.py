@@ -76,3 +76,14 @@ manual_warped = cv.warpPerspective(img1, H_manual, (img2.shape[1], img2.shape[0]
 
 cv.imwrite(os.path.join(OUT_DIR, "q3a_manual_warped.png"), manual_warped)
 
+# --------------------------------------------------
+# Part (b): difference image for manual homography
+# --------------------------------------------------
+manual_diff = cv.absdiff(manual_warped, img2)
+manual_diff_gray = cv.cvtColor(manual_diff, cv.COLOR_BGR2GRAY)
+_, manual_diff_thresh = cv.threshold(manual_diff_gray, 30, 255, cv.THRESH_BINARY)
+
+cv.imwrite(os.path.join(OUT_DIR, "q3b_manual_difference_gray.png"), manual_diff_gray)
+cv.imwrite(os.path.join(OUT_DIR, "q3b_manual_difference_threshold.png"), manual_diff_thresh)
+
+
